@@ -1,0 +1,67 @@
+# This file is being maintained by Puppet.
+# DO NOT EDIT
+# 
+## Path:                System/Logging
+## Description:         System logging
+## Type:                list(0,1,2,3,4,5,6,7)
+## Default:             1
+## Config:              ""
+## ServiceRestart:      syslog
+#
+# Default loglevel for klogd
+#
+KERNEL_LOGLEVEL=1
+
+## Type:                string
+## Default:             ""
+## Config:              ""
+## ServiceRestart:      syslog
+#
+# if not empty: parameters for syslogd
+# for example SYSLOGD_PARAMS="-r -s my.dom.ain"
+#
+SYSLOGD_PARAMS=""
+
+## Type:                string
+## Default:             -x
+## Config:              ""
+## ServiceRestart:      syslog
+#
+# if not empty: parameters for klogd
+# for example KLOGD_PARAMS="-x" to avoid (duplicate) symbol resolution
+#
+KLOGD_PARAMS="-x"
+
+## Type:                list(syslogd,syslog-ng)
+## Default:             syslogd
+## Config:              syslog-ng
+## Command:             /sbin/rcsyslog restart
+## PreSaveCommand:      /sbin/rcsyslog status && /sbin/rcsyslog stop
+#
+# The name of the syslog daemon used as
+# syslog service: "syslogd", "syslog-ng"
+#
+SYSLOG_DAEMON="syslog-ng"
+
+## Type:           yesno
+## Default:        yes
+## Config:         syslog-ng
+## ServiceRestart: syslog
+#
+# If you don't want to let SuSEconfig generate your
+# syslog-ng configuration file, set this to "no".
+#
+# SuSEconfig is using a template configuration file
+#       /etc/syslog-ng/syslog-ng.in
+# you can adopt it to your needs instead...
+#
+SYSLOG_NG_CREATE_CONFIG="yes"
+
+## Type:           string
+## Default:        ""
+## Config:         ""
+## ServiceRestart: syslog
+#
+# Parameters for Syslog New-Generation - see syslog-ng(8)
+#
+SYSLOG_NG_PARAMS=""

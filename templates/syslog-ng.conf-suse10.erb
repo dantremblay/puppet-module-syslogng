@@ -1,0 +1,81 @@
+# This file is being maintained by Puppet.
+# DO NOT EDIT
+# 
+# Syslog-ng.conf for SUsE Linux
+#
+
+options { long_hostnames(off); sync(0); perm(0640); stats(3600); };
+
+source src {
+        internal();
+
+        unix-dgram("/dev/log");
+
+};
+
+filter f_iptables   { facility(kern) and match("IN=") and match("OUT="); };
+filter f_console    { level(warn) and facility(kern) and not filter(f_iptables) or level(err) and not facility(authpriv); };
+filter f_newsnotice { level(notice) and facility(news); };
+filter f_newscrit   { level(crit)   and facility(news); };
+filter f_newserr    { level(err)    and facility(news); };
+filter f_news       { facility(news); };
+filter f_mailinfo   { level(info)      and facility(mail); };
+filter f_mailwarn   { level(warn)      and facility(mail); };
+filter f_mailerr    { level(err, crit) and facility(mail); };
+filter f_mail       { facility(mail); };
+filter f_cron       { facility(cron); };
+filter f_local      { facility(local0, local1, local2, local3, local4, local5, local6, local7); };
+filter f_acpid_full { match('^acpid:'); };
+filter f_acpid      { level(emerg..notice) and match('^acpid:'); };
+filter f_acpid_old  { match('^\[acpid\]:'); };
+filter f_netmgm     { match('^NetworkManager:'); };
+filter f_messages   { not facility(news, mail) and not filter(f_iptables); };
+filter f_warn       { level(warn, err, crit) and not filter(f_iptables); };
+filter f_alert      { level(alert); };
+
+destination console       { pipe("/dev/tty10" group(tty) perm(0620)); };
+destination xconsole      { pipe("/dev/xconsole" group(tty) perm(0400)); };
+destination newscrit      { file("/var/log/news/news.crit" owner(news) group(news)); };
+destination newserr       { file("/var/log/news/news.err" owner(news) group(news)); };
+destination newsnotice    { file("/var/log/news/news.notice" owner(news) group(news)); };
+destination mailinfo      { file("/var/log/mail.info"); };
+destination mailwarn      { file("/var/log/mail.warn"); };
+destination mailerr       { file("/var/log/mail.err" fsync(yes)); };
+destination mail          { file("/var/log/mail"); };
+destination acpid         { file("/var/log/acpid"); };
+destination netmgm        { file("/var/log/NetworkManager"); };
+destination localmessages { file("/var/log/localmessages"); };
+destination messages      { file("/var/log/messages"); };
+destination firewall      { file("/var/log/firewall"); };
+destination warn          { file("/var/log/warn" fsync(yes)); };
+destination null          { };
+
+<% if @remote_logging_real -%>
+destination d_loghost {
+    <% log_servers.each do | k, v | -%>
+    <%= v['transport_protocol'] %>("<%= v['host'] %>" port(<%= v['port'] %>));
+    <% end -%>
+};
+<% end -%>
+
+log { source(src); filter(f_console); destination(console); };
+log { source(src); filter(f_console); destination(xconsole); };
+log { source(src); filter(f_newscrit); destination(newscrit); };
+log { source(src); filter(f_newserr); destination(newserr); };
+log { source(src); filter(f_newsnotice); destination(newsnotice); };
+log { source(src); filter(f_mailinfo); destination(mailinfo); };
+log { source(src); filter(f_mailwarn); destination(mailwarn); };
+log { source(src); filter(f_mailerr);  destination(mailerr); };
+log { source(src); filter(f_mail); destination(mail); };
+log { source(src); filter(f_acpid); destination(acpid); flags(final); };
+log { source(src); filter(f_acpid_full); destination(null); flags(final); };
+log { source(src); filter(f_acpid_old); destination(acpid); flags(final); };
+log { source(src); filter(f_netmgm); destination(netmgm); flags(final); };
+log { source(src); filter(f_local); destination(localmessages); };
+log { source(src); filter(f_messages); destination(messages); };
+log { source(src); filter(f_iptables); destination(firewall); };
+log { source(src); filter(f_warn); destination(warn); };
+
+<% if @remote_logging_real -%>
+log { source(src); destination(d_loghost); };
+<% end -%>

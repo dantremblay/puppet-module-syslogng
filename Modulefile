@@ -1,0 +1,10 @@
+name    'juliengk-syslogng'
+version '0.1.0'
+source 'git://github.com/juliengk/puppet-module-syslogng.git'
+author 'juliengk'
+license 'Apache License, Version 2.0'
+summary 'Manage syslog-ng'
+description 'Manage syslog-ng'
+project_page 'https://github.com/juliengk/puppet-module-syslogng'
+
+dependency 'puppetlabs/stdlib',   '>= 3.2.0'
