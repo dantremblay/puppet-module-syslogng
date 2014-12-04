@@ -81,12 +81,12 @@ class syslogng (
       case $::lsbmajdistrelease {
         '10': {
           $default_logrotate_present       = true
-          $default_logrotate_d_config_path = '/etc/logrotate.d/syslog',
-          $defaultlogrotate_d_config_file  = 'logrotate.suse10',
-          $default_config_path             = '/etc/syslog-ng/syslog-ng.conf',
-          $default_config_file_erb         = 'syslog-ng.conf.suse10.erb',
+          $default_logrotate_d_config_path = '/etc/logrotate.d/syslog'
+          $defaultlogrotate_d_config_file  = 'logrotate.suse10'
+          $default_config_path             = '/etc/syslog-ng/syslog-ng.conf'
+          $default_config_file_erb         = 'syslog-ng.conf.suse10.erb'
           $default_sysconfig_path          = '/etc/sysconfig/syslog'
-          $sysconfig_erb                   = 'sysconfig.suse10.erb',
+          $sysconfig_erb                   = 'sysconfig.suse10.erb'
           $default_service_name            = 'syslog'
         }
         default: {
@@ -175,7 +175,7 @@ class syslogng (
     owner   => $logrotate_d_config_owner,
     group   => $logrotate_d_config_group,
     mode    => $logrotate_d_config_mode,
-    source  => "puppet:///syslogng/${logrotate_d_config_file_real}"),
+    source  => "puppet:///syslogng/${logrotate_d_config_file_real}",
     require => Package[$package],
   }
 
